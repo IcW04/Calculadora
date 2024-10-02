@@ -1,34 +1,28 @@
 <template>
-  <body>
-    <h1>Este es un ejemplo para hacer push. borra esta linea</h1>
-    <div class="Calculadora">
-    <div class="resutaldo">0</div>
-    <div class = "btn funcion">C</div>
-    <div class = "btn funcion">+/-</div>
-    <div class = "btn funcion">%</div>
-    <div class = "btn Operator">÷</div>
-    <div class = "btn">7</div>
-    <div class = "btn">8</div>
-    <div class = "btn">9</div>
-    <div class = "btn Operator">x</div>
-    <div class = "btn">4</div>
-    <div class = "btn">5</div>
-    <div class = "btn">6</div>
-    <div class = "btn Operator">-</div>
-    <div class = "btn">1</div>
-    <div class = "btn">2</div>
-    <div class = "btn">3</div>
-    <div class = "btn Operator">+</div>
-    <div class = "btn cero">0</div>
-    <div class = "btn">.</div>
-    <div class = "btn Operator">=</div>
-
-
+<body>
+  <div class="Calculadora">
+  <div class="resutaldo">{{actual || '0'}}</div>
+  <div @click="clear" class = "btn funcion">C</div>
+  <div @click="signo" class = "btn funcion">+/-</div>
+  <div @click="porcentaje" class = "btn funcion">%</div>
+  <div @click="division" class = "btn Operator">÷</div>
+  <div @click="append('7')" class = "btn">7</div>
+  <div @click="append('8')" class = "btn">8</div>
+  <div @click="append('9')" class = "btn">9</div>
+  <div @click="multiplicacion" class = "btn Operator">x</div>
+  <div @click="append('4')" class = "btn">4</div>
+  <div @click="append('5')" class = "btn">5</div>
+  <div @click="append('6')" class = "btn">6</div>
+  <div @click="resta" class = "btn Operator">-</div>
+  <div @click="append('1')" class = "btn">1</div>
+  <div @click="append('2')" class = "btn">2</div>
+  <div @click="append('3')" class = "btn">3</div>
+  <div @click="suma" class = "btn Operator">+</div>
+  <div @click="append('0')" class = "btn cero">0</div>
+  <div @click= "punto" class = "btn">.</div>
+  <div @click="igual" class = "btn Operator">=</div>
   </div>
-
-
   </body>
-  
 </template>
 
 <script>
@@ -36,10 +30,65 @@ export default {
   name: 'App',
   data() {
     return {
-      resultado: 0,
+      anterior: null,
+      actual: '',
+      operador: null,
+      operadorClickeado: false,
     };
   },
-
+  methods: {
+    clear() {
+      this.actual = '';
+      this.anterior = null;
+      this.operador = null;
+      this.operadorClickeado = false;
+    },
+    signo() {
+      this.actual = this.actual.charAt(0) === '-' ? this.actual.slice(1) : `-${this.actual}`; 
+    },
+    porcentaje() {
+      this.actual = `${parseFloat(this.actual) / 100}`;
+    },
+    append(number) {
+      if (this.operadorClickeado) {
+        this.actual = '';
+        this.operadorClickeado = false;
+      }
+      this.actual = `${this.actual}${number}`;
+    },
+    punto() {
+      if (this.actual.indexOf('.') === -1) {
+        this.actual += '.';
+      }
+    },
+    setOperador(operacion) {
+      if (this.anterior !== null) {
+        this.igual();
+      }
+      this.operador = operacion;
+      this.anterior = this.actual;
+      this.operadorClickeado = true;
+    },
+    division() {
+      this.setOperador((a, b) => a / b);
+    },
+    multiplicacion() {
+      this.setOperador((a, b) => a * b);
+    },
+    resta() {
+      this.setOperador((a, b) => a - b);
+    },
+    suma() {
+      this.setOperador((a, b) => a + b);
+    },
+    igual() {
+      if (this.operador && this.anterior !== null) {
+    this.actual = `${this.operador(parseFloat(this.anterior), parseFloat(this.actual))}`;
+    this.anterior = null;
+    this.operadorClickeado = true;
+  }
+}
+  }
 }
 </script>
 
